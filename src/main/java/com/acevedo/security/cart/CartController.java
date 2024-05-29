@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "https://racevedo.net", allowCredentials = "true")
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 public class CartController {

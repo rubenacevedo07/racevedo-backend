@@ -32,12 +32,11 @@ public class AuthenticationController {
   private final AuthenticationService service;
 
 
-  @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+  @CrossOrigin(origins = "https://racevedo.net", allowCredentials = "true")
   @PostMapping("/validate")
   public ResponseEntity<AuthenticationResponse>validate(@CookieValue(name="accessToken", required=false) String jwt,
                                                         @RequestBody UserRequest user)
   {
-    String field1 = user.getUsername();
     if(jwt == null){
       return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
@@ -53,7 +52,7 @@ public class AuthenticationController {
 
   }
 
-  @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+  @CrossOrigin(origins = "https://racevedo.net", allowCredentials = "true")
   @PostMapping("/sign-in-with-token")
   public ResponseEntity<AuthenticationResponse>tokenValidation(@RequestBody TokenRequest jwt)
   {
@@ -69,30 +68,25 @@ public class AuthenticationController {
       // Return ResponseEntity with a status code, headers, and response body
       return new ResponseEntity<>(response, headers, HttpStatus.BAD_REQUEST);
     }
-
   }
 
-  @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+  @CrossOrigin(origins = "https://racevedo.net", allowCredentials = "true")
   @PostMapping("/login")
   public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request, HttpServletResponse res) {
         AuthenticationResponse auth;
         auth = service.login(request);
 
         ResponseCookie tokenCookie = ResponseCookie.from("accessToken", auth.getAccessToken())
-              .httpOnly(false)  // Flag for security, prevents client-side JavaScript access
-              .secure(false)  // Set to true if using HTTPS only.sameSite("none")  // sameSite
+              .httpOnly(true)  // Flag for security, prevents client-side JavaScript access
+              .secure(true)  // Set to true if using HTTPS only.sameSite("none")  // sameSite
               .path("/")  // Accessible from all paths
               .build();
 
         res.setHeader(HttpHeaders.SET_COOKIE, tokenCookie.toString());
-
-        // Set CSRF token in response header for client-side usage
-        //res.setHeader("X-CSRF-TOKEN", service.generateCsrfToken());// CSRF Protection (Example using a hidden form field)
-
         return ResponseEntity.ok(auth);
     }
 
-  @CrossOrigin(origins = "http://localhost:4200")
+  @CrossOrigin(origins = "https://racevedo.net")
   @PostMapping("/forgot-password")
   public ResponseEntity<Boolean> checkEmail(@RequestBody PasswordRequest email) {
     if (service.checkEmail(email)) {
@@ -102,7 +96,7 @@ public class AuthenticationController {
     }
   }
 
-  @CrossOrigin(origins = "http://localhost:4200")
+  @CrossOrigin(origins = "https://racevedo.net")
   @PostMapping("/reset-password")
   public ResponseEntity<Boolean> resetPassword(@RequestBody ResetPasswordRequest request) {
     // Validate token and update password

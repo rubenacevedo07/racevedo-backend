@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "https://racevedo.net", allowCredentials = "true")
 @RequestMapping("/api/v1/order")
 @RequiredArgsConstructor
 public class OrderController {
@@ -35,7 +35,6 @@ public class OrderController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            orderService.findOrdersItemsByUser(userDetails.getUsername());
             return ResponseEntity.ok(orderService.findOrdersItemsByUser(userDetails.getUsername()));
         } else {
             return ResponseEntity.notFound().build(); // Handle unauthenticated user

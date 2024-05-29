@@ -12,5 +12,4 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     @Query("SELECT p, o FROM Order o, OrderProduct p WHERE o.userEmail = :userEmail")
     List<OrderProduct[]> findOrdersItemsByUser(@Param("userEmail") String userEmail);
 
-
 }

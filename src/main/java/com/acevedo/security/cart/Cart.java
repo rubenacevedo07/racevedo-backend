@@ -29,7 +29,5 @@ public class Cart {
     private Integer price;
     private BigDecimal subtotal;
 
-    public Cart() {
-        // Optional: Initialize default values for fields if needed
-    }
+    public Cart() {}
 }

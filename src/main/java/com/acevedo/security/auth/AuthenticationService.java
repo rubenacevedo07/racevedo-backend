@@ -224,38 +224,36 @@ public class AuthenticationService {
     public boolean validateAndResetPassword(String token, String newPassword) {
         // Validate token (check association with user and expiry)
         User user = passwordResetTokenService.validatePasswordResetToken(token);
-        System.out.println(token);
-        System.out.println(newPassword);
-        System.out.println(user.getEmail());
 
         // Handle the Optional object based on its value (present or empty)
         if (user != null) {
-            System.out.println("Validate token true");
             // User found, proceed with password reset logic
             passwordResetTokenService.resetPassword(user, newPassword);
-            System.out.println("Validate token true");
             return true;
         } else {
-            System.out.println("Validate token false");
             return false;
         }
     }
 
+    private UserApiResponse setApiResponse (User user){
+        UserApiResponse userResponse = new UserApiResponse();
+        userResponse.setCounter(cartRepository.countItems(user.getUsername()));
+        userResponse.setAvatar("assets/images/avatars/luke.jpg");
+        userResponse.setEmail(user.getUsername());
+        userResponse.setStatus("online");
+        userResponse.setName(user.getFirstname() + " " + user.getLastname());
+        return userResponse;
+    }
+
     public AuthenticationResponse validateToken(String jwtToken) {
         String userEmail;
-        String accessToken;
-        UserApiResponse userApiResponse = new UserApiResponse();
 
         String utf8String = new String(jwtToken.getBytes(Charset.forName("windows-1252")), StandardCharsets.UTF_8); // Replace "windows-1252" with the actual encoding
         userEmail = jwtService.extractUsername(utf8String);
         if (userEmail != null) {
             var user = this.repository.findByEmail(userEmail)
                     .orElseThrow();
-            userApiResponse.setCounter(cartRepository.countItems(user.getUsername()));
-            userApiResponse.setAvatar("assets/images/avatars/luke.jpg");
-            userApiResponse.setEmail(userEmail);
-            userApiResponse.setStatus("online");
-            userApiResponse.setName(user.getFirstname() + " " + user.getLastname());
+            UserApiResponse userApiResponse = setApiResponse(user);
 
             if (jwtService.isTokenValid(utf8String, user)) {
                 return AuthenticationResponse.builder()
@@ -282,8 +280,6 @@ public class AuthenticationService {
         String userEmail;
         String accessToken;
 
-        UserApiResponse userApiResponse = new UserApiResponse();
-
         accessToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(accessToken);
 
@@ -291,10 +287,7 @@ public class AuthenticationService {
             var user = this.repository.findByEmail(userEmail)
                     .orElseThrow();
 
-            userApiResponse.setAvatar("assets/images/avatars/luke.jpg");
-            userApiResponse.setEmail(userEmail);
-            userApiResponse.setStatus("online");
-            userApiResponse.setName(user.getFirstname() + " " + user.getLastname());
+            UserApiResponse userApiResponse = setApiResponse(user);
 
             if (jwtService.isTokenValid(accessToken, user)) {
                 var authResponse = TokenAuthResponse.builder()
@@ -313,15 +306,8 @@ public class AuthenticationService {
         final String refreshToken;
         final String userEmail;
 
-    /*if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      // Handle the case where the Authorization header is missing or not in the expected format
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Authorization header");
-      return;
-    }*/
-
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
-        UserApiResponse userApiResponse = new UserApiResponse();
 
         if (userEmail != null) {
             var user = this.repository.findByEmail(userEmail)
@@ -332,10 +318,7 @@ public class AuthenticationService {
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
 
-                userApiResponse.setAvatar("assets/images/avatars/luke.jpg");
-                userApiResponse.setEmail(userEmail);
-                userApiResponse.setStatus("online");
-                userApiResponse.setName(user.getFirstname() + " " + user.getLastname());
+                UserApiResponse userApiResponse = setApiResponse(user);
 
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)

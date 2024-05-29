@@ -84,7 +84,7 @@ public class EmailService {
     }
 
     private String buildPasswordResetEmailContent(User user, String token) {
-        String baseUrl = "http://localhost:4200"; // Replace with your app's base URL
+        String baseUrl = "https://racevedo.net"; // Replace with your app's base URL
         String resetUrl = baseUrl + "/reset-password?token=" + token;
 
         StringBuilder content = new StringBuilder();
